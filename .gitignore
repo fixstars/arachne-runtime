@@ -1,0 +1,10 @@
+.cache/
+
+# Python
+__pycache__
+
+# Poetry
+.venv/
+
+# Temporary data
+tmp/
