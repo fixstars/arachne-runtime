@@ -5,10 +5,14 @@ description = ""
 authors = ["Shuntaro Sato <shuntaro.st@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "arachne_runtime"}]
+packages = [{include = "arachne_runtime", from="./python"}]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.7,<3.10"
+PyYAML = "^6.0"
+grpcio = "^1.45.0"
+grpcio-tools = "^1.45.0"
+numpy = "^1.22.3"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -16,6 +20,8 @@ pytest = "^7.1.2"
 black = "^22.3.0"
 isort = "^5.10.1"
 flake8 = "^4.0.1"
+onnxruntime = "^1.11.0"
+tensorflow = "^2.8.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -32,6 +38,7 @@ exclude = '''
     | \.git
     | \.vscode
     | docker\/
+    | python\/arachne_runtime\/rpc\/protobuf\/*
   )/
 )
 '''
@@ -39,4 +46,6 @@ exclude = '''
 [tool.isort]
 profile = "black"
 multi_line_output = 3
-src_path = ["python/arachne-runtime"]
+src_path = ["python/arachne_runtime"]
+filter_files = true
+skip_glob = "python/arachne_runtime/rpc/protobuf/*, */docker/**, */.vscode/**/*, */.git/**/*, */.github/**/*"

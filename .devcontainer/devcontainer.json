@@ -1,0 +1,16 @@
+{
+    "name": "arachne-runtime",
+    "build": {
+        "dockerfile": "../docker/devel.Dockerfile",
+        "target": "base",
+        "context": "../docker"
+    },
+    "remoteEnv": {
+        "PYTHONPATH": "/workspaces/arachne-runtime/python",
+    },
+    "workspaceFolder": "/workspaces/arachne-runtime",
+    "remoteUser": "developer",
+    "forwardPorts": [
+        8888
+    ]
+}
