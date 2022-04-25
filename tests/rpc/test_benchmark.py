@@ -3,10 +3,11 @@ import tempfile
 
 from tvm.contrib.download import download
 
-import arachne.runtime
-import arachne.runtime.rpc
-import arachne.tools.tvm
-from arachne.runtime.rpc.server import create_server
+import arachne_runtime
+import arachne_runtime.rpc
+
+# import arachne.tools.tvm
+from arachne_runtime.rpc.server import create_server
 
 
 def test_tvm_runtime_rpc_benchmark(rpc_port=5051):
@@ -20,7 +21,7 @@ def test_tvm_runtime_rpc_benchmark(rpc_port=5051):
         server = create_server(rpc_port)
         server.start()
         try:
-            client = arachne.runtime.rpc.init(
+            client = arachne_runtime.rpc.init(
                 runtime="tvm", package_tar=tvm_package_path, rpc_port=rpc_port
             )
             client.benchmark()
@@ -40,7 +41,7 @@ def test_tflite_runtime_rpc_benchmark(rpc_port=5051):
         server = create_server(rpc_port)
         server.start()
         try:
-            client = arachne.runtime.rpc.init(
+            client = arachne_runtime.rpc.init(
                 runtime="tflite", model_file=model_path, rpc_port=rpc_port
             )
             client.benchmark()
@@ -61,7 +62,7 @@ def test_onnx_runtime_rpc_benchmark(rpc_port=5051):
         server.start()
         try:
             ort_opts = {"providers": ["CPUExecutionProvider"]}
-            client = arachne.runtime.rpc.init(
+            client = arachne_runtime.rpc.init(
                 runtime="onnx", model_file=model_path, rpc_port=rpc_port, **ort_opts
             )
             client.benchmark()

@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from ..data import ModelSpec, TensorSpec
+from .data import ModelSpec, TensorSpec
 
 
 def make_tf_gpu_usage_growth():

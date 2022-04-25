@@ -5,7 +5,7 @@ import numpy as np
 import onnxruntime as ort
 from tvm.contrib.download import download
 
-import arachne.runtime
+import arachne_runtime
 
 
 def test_onnx_runtime():
@@ -27,7 +27,7 @@ def test_onnx_runtime():
 
         # Arachne Runtime
         ort_opts = {"providers": ["CPUExecutionProvider"]}
-        runtime_module = arachne.runtime.init(
+        runtime_module = arachne_runtime.init(
             runtime="onnx", model_file=onnx_model_path, **ort_opts
         )
         runtime_module.set_input(0, input_data)

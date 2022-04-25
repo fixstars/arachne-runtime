@@ -6,6 +6,8 @@ select = B,C,E,F,W,T4,B9
 per-file-ignores = __init__.py:F401
 exclude =
     .git,
-    __pycache__,
     .venv,
+    __pycache__,
+    build,
+    3rdparty,
     python/arachne-runtime/rpc/protobuf/*

@@ -8,8 +8,8 @@ from tvm.contrib import graph_executor
 from tvm.contrib.download import download
 from tvm.contrib.graph_executor import GraphModule
 
-import arachne.runtime
-from arachne.runtime.module.tvm import _open_module_file
+import arachne_runtime
+from arachne_runtime.module.tvm import _open_module_file
 
 
 def test_tvm_runtime():
@@ -37,7 +37,7 @@ def test_tvm_runtime():
         del module
 
         # Arachne Runtime
-        runtime_module = arachne.runtime.init(runtime="tvm", package_tar=tvm_package_path)
+        runtime_module = arachne_runtime.init(runtime="tvm", package_tar=tvm_package_path)
         runtime_module.set_input(0, input_data)
         runtime_module.run()
         aout = runtime_module.get_output(0)

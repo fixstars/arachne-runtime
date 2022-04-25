@@ -1,20 +1,25 @@
-FROM ubuntu:20.04 as base
+FROM arachnednn/arachne:base-gpu-jp46 as base
 
 ENV LANG C.UTF-8
-ENV TZ Asia/Tokyo
 ENV PYTHONIOENCODING=utf-8
 
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+# Install other packages for development
+
+RUN echo deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main >> /etc/apt/sources.list.d/llvm.list \
+    && echo deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main >> /etc/apt/sources.list.d/llvm.list \
+    && apt-key adv --fetch-keys http://apt.llvm.org/llvm-snapshot.gpg.key \
+    && apt-get update && apt-get install -y llvm-11 clang-11
 
 RUN apt-get update && apt-get install -y \
     python3 \
     python3-dev \
     python3-pip \
     python3-venv \
-    # libopenblas-dev \
-    # libgl1-mesa-dev \
+    libopenblas-dev \
+    libgl1-mesa-dev \
     sudo \
     curl \
+    cmake \
     git \
     ssh
 
@@ -39,10 +44,9 @@ USER $USERNAME
 ENV HOME /home/developer
 ENV PATH $HOME/.local/bin:/usr/local/poetry/bin:$PATH
 
-
 # Stage 2: including src image
 # Clone src
 FROM base AS src
 
-RUN git clone https://github.com/fixstars/arachne-runtime.git $HOME/arachne_src
-# RUN git clone --recursive https://github.com/fixstars/tvm $HOME/arachne_src/3rdparty/tvm
+RUN git clone https://github.com/fixstars/arachne-runtime.git $HOME/arachne-runtime_src
+RUN git clone --recursive https://github.com/fixstars/tvm $HOME/arachne_src/3rdparty/tvm

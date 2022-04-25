@@ -4,10 +4,11 @@ import tempfile
 import numpy as np
 from tvm.contrib.download import download
 
-import arachne.runtime
-import arachne.runtime.rpc
-import arachne.tools.tvm
-from arachne.runtime.rpc.server import create_server
+import arachne_runtime
+import arachne_runtime.rpc
+
+# import arachne.tools.tvm
+from arachne_runtime.rpc.server import create_server
 
 
 def test_tvm_runtime_rpc(rpc_port=5051):
@@ -20,7 +21,7 @@ def test_tvm_runtime_rpc(rpc_port=5051):
         dummy_input = np.array(np.random.random_sample([1, 224, 224, 3]), dtype=np.float32)  # type: ignore
 
         # local run
-        rtmodule = arachne.runtime.init(runtime="tvm", package_tar=tvm_package_path)
+        rtmodule = arachne_runtime.init(runtime="tvm", package_tar=tvm_package_path)
         assert rtmodule
         rtmodule.set_input(0, dummy_input)
         rtmodule.run()
@@ -30,7 +31,7 @@ def test_tvm_runtime_rpc(rpc_port=5051):
         server = create_server(rpc_port)
         server.start()
         try:
-            client = arachne.runtime.rpc.init(
+            client = arachne_runtime.rpc.init(
                 runtime="tvm", package_tar=tvm_package_path, rpc_port=rpc_port
             )
             client.set_input(0, dummy_input)
@@ -65,7 +66,7 @@ def test_tvm_runtime_rpc2(rpc_port=5051):
         assert model_file is not None
         assert env_file is not None
         # local run
-        rtmodule = arachne.runtime.init(runtime="tvm", model_file=model_file, env_file=env_file)
+        rtmodule = arachne_runtime.init(runtime="tvm", model_file=model_file, env_file=env_file)
         assert rtmodule
         rtmodule.set_input(0, dummy_input)
         rtmodule.run()
@@ -75,7 +76,7 @@ def test_tvm_runtime_rpc2(rpc_port=5051):
         server = create_server(rpc_port)
         server.start()
         try:
-            client = arachne.runtime.rpc.init(
+            client = arachne_runtime.rpc.init(
                 runtime="tvm", model_file=model_file, env_file=env_file, rpc_port=rpc_port
             )
             client.set_input(0, dummy_input)
@@ -95,7 +96,7 @@ def test_tflite_runtime_rpc(rpc_port=5051):
         url = "https://arachne-public-pkgs.s3.ap-northeast-1.amazonaws.com/models/test/mobilenet.tflite"
         download(url, model_path)
 
-        rtmodule = arachne.runtime.init(runtime="tflite", model_file=model_path)
+        rtmodule = arachne_runtime.init(runtime="tflite", model_file=model_path)
         assert rtmodule
 
         # local
@@ -108,7 +109,7 @@ def test_tflite_runtime_rpc(rpc_port=5051):
         server = create_server(rpc_port)
         server.start()
         try:
-            client = arachne.runtime.rpc.init(
+            client = arachne_runtime.rpc.init(
                 runtime="tflite", model_file=model_path, rpc_port=rpc_port
             )
             client.set_input(0, dummy_input)
@@ -135,7 +136,7 @@ def test_onnx_runtime_rpc(rpc_port=5051):
         ort_opts = {"providers": ["CPUExecutionProvider"]}
 
         # local run
-        rtmodule = arachne.runtime.init(runtime="onnx", model_file=model_path, **ort_opts)
+        rtmodule = arachne_runtime.init(runtime="onnx", model_file=model_path, **ort_opts)
         assert rtmodule
         rtmodule.set_input(0, dummy_input)
         rtmodule.run()
@@ -144,7 +145,7 @@ def test_onnx_runtime_rpc(rpc_port=5051):
         server = create_server(rpc_port)
         server.start()
         try:
-            client = arachne.runtime.rpc.init(
+            client = arachne_runtime.rpc.init(
                 runtime="onnx", model_file=model_path, rpc_port=rpc_port, **ort_opts
             )
             client.set_input(0, dummy_input)

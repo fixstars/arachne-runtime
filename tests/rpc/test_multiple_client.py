@@ -6,8 +6,8 @@ import numpy as np
 import pytest
 from tvm.contrib.download import download
 
-from arachne.runtime.rpc import RuntimeClient, create_channel
-from arachne.runtime.rpc.server import create_server
+from arachne_runtime.rpc import RuntimeClient, create_channel
+from arachne_runtime.rpc.server import create_server
 
 
 @pytest.mark.xfail

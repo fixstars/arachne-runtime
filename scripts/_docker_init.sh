@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 
 # overwrite uid and gid
-usermod -u $HOST_UID developer
-groupmod -g $HOST_GID developer
+usermod -u "$HOST_UID" developer
+groupmod -g "$HOST_GID" developer
 
 # keep some environments
-echo "export PYTHONPATH=${PYTHONPATH}" >> /home/developer/.bashrc
-echo "export PYTHONIOENCODING=utf-8" >> /home/developer/.bashrc
-# echo "export TVM_LIBRARY_PATH=${TVM_LIBRARY_PATH}" >> /home/developer/.bashrc
-# echo "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}" >> /home/developer/.bashrc
-echo "export PATH=${PATH}" >> /home/developer/.bashrc
-echo "cd /workspaces/arachne-runtime" >> /home/developer/.bashrc
+{
+    echo "export PYTHONPATH=${PYTHONPATH}"
+    echo "export PYTHONIOENCODING=utf-8"
+    echo "export TVM_LIBRARY_PATH=${TVM_LIBRARY_PATH}"
+    echo "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
+    echo "export PATH=${PATH}"
+    echo "cd /workspaces/arachne-runtime"
+} >> /home/developer/.bashrc
 
 # change to the developer
 chown developer:developer -R /home/developer

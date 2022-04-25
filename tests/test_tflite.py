@@ -6,7 +6,7 @@ import numpy as np
 import tensorflow as tf
 from tvm.contrib.download import download
 
-import arachne.runtime
+import arachne_runtime
 
 
 def test_tflite_runtime():
@@ -34,7 +34,7 @@ def test_tflite_runtime():
 
         # Arachne Runtime
         tflite_interpreter_opts = {"num_threads": 4}
-        runtime_module = arachne.runtime.init(
+        runtime_module = arachne_runtime.init(
             runtime="tflite", model_file=model_path, **tflite_interpreter_opts
         )
         runtime_module.set_input(0, input_data)

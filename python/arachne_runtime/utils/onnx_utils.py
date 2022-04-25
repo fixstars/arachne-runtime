@@ -1,6 +1,6 @@
 import onnxruntime as ort
 
-from ..data import ModelSpec, TensorSpec
+from .data import ModelSpec, TensorSpec
 
 
 def get_onnx_model_spec(model_path: str) -> ModelSpec:

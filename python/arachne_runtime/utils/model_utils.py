@@ -13,7 +13,7 @@ import tvm
 import yaml
 from omegaconf import DictConfig, OmegaConf
 
-from ..data import Model, ModelFormat, ModelSpec, TensorSpec
+from .data import Model, ModelFormat, ModelSpec, TensorSpec
 from .onnx_utils import get_onnx_model_spec
 from .tf_utils import get_keras_model_spec, get_saved_model_spec, get_tflite_model_spec
 from .version_utils import (
