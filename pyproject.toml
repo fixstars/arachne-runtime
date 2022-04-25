@@ -1,0 +1,41 @@
+[tool.poetry]
+name = "arachne-runtime"
+version = "0.1.0"
+description = ""
+authors = ["Shuntaro Sato <shuntaro.st@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "arachne_runtime"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.1.2"
+black = "^22.3.0"
+isort = "^5.10.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 100
+target-version = ['py38']
+include = '(\.pyi?$)'
+exclude = '''
+(
+  /(
+      \.github
+    | \.git
+    | \.vscode
+    | docker\/
+  )/
+)
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+src_path = ["python/arachne-runtime"]
