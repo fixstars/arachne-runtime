@@ -1,4 +1,6 @@
 .cache/
+build/
+3rdparty
 
 # Python
 __pycache__
