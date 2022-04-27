@@ -1,14 +1,14 @@
 {
     "name": "arachne-runtime",
     "build": {
-        "dockerfile": "../docker/devel-gpu.Dockerfile",
-        "target": "base",
+        "dockerfile": "../docker/devel.Dockerfile",
+        // "target": "base",
         "context": "../docker"
     },
-    "runArgs": [
-        "--gpus",
-        "all"
-    ],
+    // "runArgs": [
+    //     "--gpus",
+    //     "all"
+    // ],
     "remoteEnv": {
         "PYTHONPATH": "/workspaces/arachne-runtime/python",
         "TVM_LIBRARY_PATH": "/workspaces/arachne-runtime/build/tvm"

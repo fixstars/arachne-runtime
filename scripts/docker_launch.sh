@@ -13,5 +13,6 @@ docker run \
     -e "HOST_GID=$(id -g)" \
     -e "PYTHONPATH=/workspaces/arachne-runtime/python" \
     -e "TVM_LIBRARY_PATH=/workspaces/arachne-runtime/build/tvm" \
-    arachnednn/arachne:devel-gpu \
+    arachne-runtime:devel \
     bash /workspaces/arachne-runtime/scripts/_docker_init.sh
+
