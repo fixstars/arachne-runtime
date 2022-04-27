@@ -53,7 +53,6 @@ def test_onnx_runtime_gpu():
                 "device_id": 0,
                 "arena_extend_strategy": "kNextPowerOfTwo",
                 "gpu_mem_limit": 2 * 1024 * 1024 * 1024,
-                "cudnn_conv_algo_search": "EXHAUSTIVE",
             },
         )
     )
