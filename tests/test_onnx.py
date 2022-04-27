@@ -46,13 +46,4 @@ def test_onnx_runtime_cpu():
 
 @gpu_only
 def test_onnx_runtime_gpu():
-    _test_onnx_runtime(
-        (
-            "CUDAExecutionProvider",
-            {
-                "device_id": 0,
-                "arena_extend_strategy": "kNextPowerOfTwo",
-                "gpu_mem_limit": 2 * 1024 * 1024 * 1024,
-            },
-        )
-    )
+    _test_onnx_runtime(["CUDAExecutionProvider"])
