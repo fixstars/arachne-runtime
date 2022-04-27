@@ -2,7 +2,6 @@ import os
 import tempfile
 
 import numpy as np
-from tests import cpu_only
 from tvm.contrib.download import download
 
 import arachne_runtime
@@ -88,7 +87,6 @@ def test_tvm_runtime_rpc2(rpc_port=5051):
         np.testing.assert_equal(local_output, rpc_output)
 
 
-@cpu_only
 def test_tflite_runtime_rpc(rpc_port=5051):
     with tempfile.TemporaryDirectory() as tmp_dir:
         os.chdir(tmp_dir)

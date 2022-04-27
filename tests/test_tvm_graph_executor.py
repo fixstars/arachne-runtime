@@ -4,7 +4,6 @@ import tempfile
 
 import numpy as np
 import tvm
-from tests import gpu_only
 from tvm.contrib import graph_executor
 from tvm.contrib.download import download
 from tvm.contrib.graph_executor import GraphModule
@@ -51,10 +50,4 @@ def _test_tvm_runtime(device):
 
 def test_tvm_runtime_cpu():
     device = tvm.cpu()
-    _test_tvm_runtime(device)
-
-
-# @gpu_only
-def test_tvm_runtime_gpu():
-    device = tvm.cuda()
     _test_tvm_runtime(device)

@@ -4,13 +4,11 @@ import tempfile
 
 import numpy as np
 import tensorflow as tf
-from tests import cpu_only
 from tvm.contrib.download import download
 
 import arachne_runtime
 
 
-@cpu_only
 def test_tflite_runtime():
     with tempfile.TemporaryDirectory() as tmp_dir:
         os.chdir(tmp_dir)

@@ -4,14 +4,12 @@ import tempfile
 import grpc
 import numpy as np
 import pytest
-from tests import cpu_only
 from tvm.contrib.download import download
 
 from arachne_runtime.rpc import RuntimeClient, create_channel
 from arachne_runtime.rpc.server import create_server
 
 
-@cpu_only
 @pytest.mark.xfail
 def test_prohibit_multiple_client(rpc_port=5051):
     with tempfile.TemporaryDirectory() as tmp_dir:
@@ -36,7 +34,6 @@ def test_prohibit_multiple_client(rpc_port=5051):
             server.stop(0)
 
 
-@cpu_only
 def test_conitnue_first_client(rpc_port=5051):
     with tempfile.TemporaryDirectory() as tmp_dir:
         os.chdir(tmp_dir)

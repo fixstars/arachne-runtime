@@ -1,7 +1,6 @@
 import os
 import tempfile
 
-from tests import cpu_only
 from tvm.contrib.download import download
 
 import arachne_runtime
@@ -29,7 +28,6 @@ def test_tvm_runtime_rpc_benchmark(rpc_port=5051):
             server.stop(0)
 
 
-@cpu_only
 def test_tflite_runtime_rpc_benchmark(rpc_port=5051):
     with tempfile.TemporaryDirectory() as tmp_dir:
         os.chdir(tmp_dir)

@@ -30,7 +30,7 @@ RUN ln -s $(which pip3) /usr/local/bin/pip
 # Install dependencies for arachne-runtime
 RUN python3 -m pip install --upgrade pip --no-cache-dir \
     && python3 -m pip install --no-cache-dir \
-    tensorflow==1.6.0 \
+    tensorflow==2.6.0 \
     onnxruntime-gpu==1.10.0 \
     numpy \
     packaging \
@@ -50,6 +50,6 @@ ENV TVM_LIBRARY_PATH=/workspaces/arachne-runtime/build/tvm
 
 RUN git checkout feature/port-from-arachne
 RUN git clone --recursive https://github.com/fixstars/tvm 3rdparty/tvm
-# RUN ./scripts/install_tvm.sh gpu
+RUN ./scripts/install_tvm.sh gpu
 
-# ENTRYPOINT [ "poetry", "run", "pytest", "tests" ]
+ENTRYPOINT [ "pytest", "tests", "--forked" ]
