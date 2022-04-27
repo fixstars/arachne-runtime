@@ -25,8 +25,6 @@ else # TARGET = gpu
         echo "set(USE_CUDA /usr/local/cuda)"
         echo "set(USE_CUDNN ON)"
         echo "set(USE_CUBLAS ON)"
-        # echo "set(USE_TENSORRT_CODEGEN ON)"
-        # echo "set(USE_TENSORRT_RUNTIME ON)"
     } >> "${BUILD_DIR}/config.cmake"
 fi
 

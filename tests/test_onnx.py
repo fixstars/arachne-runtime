@@ -3,12 +3,13 @@ import tempfile
 
 import numpy as np
 import onnxruntime as ort
+from tests import gpu_only
 from tvm.contrib.download import download
 
 import arachne_runtime
 
 
-def test_onnx_runtime():
+def _test_onnx_runtime(providers):
     with tempfile.TemporaryDirectory() as tmp_dir:
         os.chdir(tmp_dir)
         url = (
@@ -20,13 +21,13 @@ def test_onnx_runtime():
         input_data = np.array(np.random.random_sample([1, 3, 224, 224]), dtype=np.float32)  # type: ignore
 
         # ONNX Runtime
-        sess = ort.InferenceSession(onnx_model_path, providers=["CPUExecutionProvider"])
+        sess = ort.InferenceSession(onnx_model_path, providers=providers)
         input_name = sess.get_inputs()[0].name
         dout = sess.run(output_names=None, input_feed={input_name: input_data})[0]
         del sess
 
         # Arachne Runtime
-        ort_opts = {"providers": ["CPUExecutionProvider"]}
+        ort_opts = {"providers": providers}
         runtime_module = arachne_runtime.init(
             runtime="onnx", model_file=onnx_model_path, **ort_opts
         )
@@ -37,3 +38,23 @@ def test_onnx_runtime():
         np.testing.assert_equal(actual=aout, desired=dout)
 
         runtime_module.benchmark()
+
+
+def test_onnx_runtime_cpu():
+    _test_onnx_runtime(["CPUExecutionProvider"])
+
+
+@gpu_only
+def test_onnx_runtime_gpu():
+    _test_onnx_runtime(
+        (
+            "CUDAExecutionProvider",
+            {
+                "device_id": 0,
+                "arena_extend_strategy": "kNextPowerOfTwo",
+                "gpu_mem_limit": 2 * 1024 * 1024 * 1024,
+                "cudnn_conv_algo_search": "EXHAUSTIVE",
+                "do_copy_in_default_stream": True,
+            },
+        )
+    )

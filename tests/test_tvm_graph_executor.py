@@ -10,9 +10,9 @@ from tvm.contrib.graph_executor import GraphModule
 
 import arachne_runtime
 from arachne_runtime.module.tvm import _open_module_file
+from tests import gpu_only
 
-
-def test_tvm_runtime():
+def _test_tvm_runtime(device):
     with tempfile.TemporaryDirectory() as tmp_dir:
         url = "https://arachne-public-pkgs.s3.ap-northeast-1.amazonaws.com/models/test/tvm_mobilenet.tar"
 
@@ -27,9 +27,8 @@ def test_tvm_runtime():
         input_data = np.array(np.random.random_sample([1, 224, 224, 3]), dtype=np.float32)  # type: ignore
 
         # TVM Graph Executor
-        tvm_device = tvm.runtime.device("cpu", 0)
         graph, params, lib = _open_module_file(tvm_model_path)
-        module: GraphModule = graph_executor.create(graph, lib, tvm_device)
+        module: GraphModule = graph_executor.create(graph, lib, device)
         module.load_params(params)
         module.set_input(0, input_data)
         module.run()
@@ -37,7 +36,7 @@ def test_tvm_runtime():
         del module
 
         # Arachne Runtime
-        runtime_module = arachne_runtime.init(runtime="tvm", package_tar=tvm_package_path)
+        runtime_module = arachne_runtime.init(runtime="tvm", package_tar=tvm_package_path, device=device)
         runtime_module.set_input(0, input_data)
         runtime_module.run()
         aout = runtime_module.get_output(0)
@@ -45,3 +44,12 @@ def test_tvm_runtime():
         np.testing.assert_equal(actual=aout, desired=dout)
 
         runtime_module.benchmark()
+
+def test_tvm_runtime_cpu():
+    device = tvm.cpu()
+    _test_tvm_runtime(device)
+
+@gpu_only
+def test_tvm_runtime_gpu():
+    device = tvm.cuda()
+    _test_tvm_runtime(device)
