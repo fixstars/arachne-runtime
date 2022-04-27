@@ -4,13 +4,14 @@ import tempfile
 
 import numpy as np
 import tvm
+from tests import gpu_only
 from tvm.contrib import graph_executor
 from tvm.contrib.download import download
 from tvm.contrib.graph_executor import GraphModule
 
 import arachne_runtime
 from arachne_runtime.module.tvm import _open_module_file
-from tests import gpu_only
+
 
 def _test_tvm_runtime(device):
     with tempfile.TemporaryDirectory() as tmp_dir:
@@ -36,7 +37,9 @@ def _test_tvm_runtime(device):
         del module
 
         # Arachne Runtime
-        runtime_module = arachne_runtime.init(runtime="tvm", package_tar=tvm_package_path, device=device)
+        runtime_module = arachne_runtime.init(
+            runtime="tvm", package_tar=tvm_package_path, device=device
+        )
         runtime_module.set_input(0, input_data)
         runtime_module.run()
         aout = runtime_module.get_output(0)
@@ -45,11 +48,13 @@ def _test_tvm_runtime(device):
 
         runtime_module.benchmark()
 
+
 def test_tvm_runtime_cpu():
     device = tvm.cpu()
     _test_tvm_runtime(device)
 
-@gpu_only
+
+# @gpu_only
 def test_tvm_runtime_gpu():
     device = tvm.cuda()
     _test_tvm_runtime(device)
