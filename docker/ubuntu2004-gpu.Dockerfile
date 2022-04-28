@@ -1,11 +1,14 @@
-FROM nvidia/cuda:11.2.2-cudnn8-devel-ubuntu18.04
+FROM nvidia/cuda:11.2.2-cudnn8-devel-ubuntu20.04
 
 ENV LANG C.UTF-8
 ENV PYTHONIOENCODING=utf-8
+ENV TZ=Asia/Tokyo
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Install LLVM to build TVM
-RUN echo deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main >> /etc/apt/sources.list.d/llvm.list \
-    && echo deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main >> /etc/apt/sources.list.d/llvm.list \
+RUN echo deb http://apt.llvm.org/focal/ llvm-toolchain-focal-11 main >> /etc/apt/sources.list.d/llvm.list \
+    && echo deb-src http://apt.llvm.org/focal/ llvm-toolchain-focal-11 main >> /etc/apt/sources.list.d/llvm.list \
     && apt-key adv --fetch-keys http://apt.llvm.org/llvm-snapshot.gpg.key \
     && apt-get update && apt-get install -y llvm-11 clang-11
 

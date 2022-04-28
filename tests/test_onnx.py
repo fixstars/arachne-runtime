@@ -35,8 +35,10 @@ def _test_onnx_runtime(providers):
         runtime_module.run()
         aout = runtime_module.get_output(0)
 
-        np.testing.assert_equal(actual=aout, desired=dout)
-
+        if "CPUExecutionProvider" in providers:
+            np.testing.assert_equal(actual=aout, desired=dout)
+        else:
+            np.testing.assert_allclose(actual=aout, desired=dout)
         runtime_module.benchmark()
 
 

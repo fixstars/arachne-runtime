@@ -1,6 +1,6 @@
 .PHONY: devel ci ubuntu1804-gpu ubuntu2004-gpu jp45 jp46 all
 
-NO_CACHE = --no-cache
+NO_CACHE = # --no-cache
 
 devel:
 	docker build -t arachne-runtime:devel \
@@ -8,6 +8,10 @@ devel:
 ci:
 	docker build -t arachne-runtime:ci \
 	-f ci.Dockerfile ${NO_CACHE} ../
+
+ubuntu2004-gpu:
+	docker build -t arachne-runtime:ubuntu2004-gpu \
+	-f ubuntu2004-gpu.Dockerfile ${NO_CACHE} .
 
 ubuntu1804-gpu:
 	docker build -t arachne-runtime:ubuntu1804-gpu \
@@ -21,4 +25,4 @@ jp45:
 	docker build -t arachne-runtime:jp45 \
 	-f jp45.Dockerfile ${NO_CACHE} .
 
-all: devel ci ubuntu1804 jp46 jp45
+all: devel ubuntu1804 jp46 jp45

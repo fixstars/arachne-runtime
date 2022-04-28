@@ -29,7 +29,7 @@ RUN python3 -m pip install --upgrade pip --no-cache-dir \
     --extra-index-url https://pypi.arachne.dev/ \
     'tensorflow==2.6.3+jp45' \
     tflite==2.6.3 \
-    onnxruntime-gpu==1.10.0 \
+    'onnxruntime-gpu-tensorrt==1.8.0+jp45' \
     numpy \
     packaging \
     pyyaml \

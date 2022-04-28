@@ -33,4 +33,4 @@ RUN git clone --recursive https://github.com/fixstars/tvm 3rdparty/tvm
 RUN poetry install
 RUN poetry run ./scripts/install_tvm.sh cpu
 
-ENTRYPOINT [ "poetry", "run", "pytest", "tests", "--forked" ]
+ENTRYPOINT [ "poetry", "run", "pytest", "tests" ]
