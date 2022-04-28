@@ -6,12 +6,12 @@ from typing import Optional
 import yaml
 from packaging.version import Version
 
+from .module import RuntimeModuleBase, RuntimeModuleFactory
 from .utils.version_utils import (
     get_cuda_version,
     get_cudnn_version,
     get_tensorrt_version,
 )
-from .module import RuntimeModuleBase, RuntimeModuleFactory
 
 logger = getLogger(__name__)
 

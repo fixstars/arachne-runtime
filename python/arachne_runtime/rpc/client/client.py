@@ -131,9 +131,7 @@ class RuntimeClient:
         Returns:
             Dict: benchmark result. Result dict has ['mean', 'std', 'max', 'min'] as key. Value is time in milisecond.
         """
-        req = runtime_message_pb2.BenchmarkRequest(
-            warmup=warmup, repeat=repeat, number=number
-        )
+        req = runtime_message_pb2.BenchmarkRequest(warmup=warmup, repeat=repeat, number=number)
         response = self.stub.Benchmark(req)
 
         return {
