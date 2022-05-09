@@ -2,26 +2,23 @@ FROM ubuntu:18.04
 
 ENV LANG C.UTF-8
 ENV PYTHONIOENCODING utf-8
+ENV DEBIAN_FRONTEND=noninteractive
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-RUN apt-get update && apt-get install -y \
-    python3 \
-    python3-dev \
-    python3-pip \
-    python3-venv \
-    # for open-cv
-    libgl1-mesa-dev \
-    sudo \
-    curl \
-    git \
-    ssh
+COPY install/install_python3.sh /install/install_python3.sh
+RUN bash /install/install_python3.sh
 
-# python -> python3
-RUN ln -s "$(which python3)" /usr/local/bin/python
-RUN ln -s "$(which pip3)" /usr/local/bin/pip
+COPY install/install_devtools.sh /install/install_devtools.sh
+RUN bash /install/install_devtools.sh
 
-# install poetry
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | POETRY_HOME=/usr/local/poetry python - --version 1.2.0a2
+COPY install/install_tvm_deps.sh /install/install_tvm_deps.sh
+RUN bash /install/install_tvm_deps.sh
+
+COPY install/install_opencv_deps.sh /install/install_opencv_deps.sh
+RUN bash /install/install_opencv_deps.sh
+
+COPY install/install_poetry.sh /install/install_poetry.sh
+RUN bash /install/install_poetry.sh
 
 # Add a user that UID:GID will be updated by vscode
 ARG USERNAME=developer

@@ -2,26 +2,36 @@ FROM arachnednn/arachne:base-gpu-jp46 as base
 
 ENV LANG C.UTF-8
 ENV PYTHONIOENCODING=utf-8
+ENV DEBIAN_FRONTEND=noninteractive
+
+# A hotfix for https://developer.nvidia.com/blog/updating-the-cuda-linux-gpg-repository-key/
+RUN rm /etc/apt/sources.list.d/cuda.list
+RUN rm /etc/apt/sources.list.d/nvidia-ml.list
+RUN apt-key del 7fa2af80
+RUN apt-get update && apt-get install -y --no-install-recommends wget
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-keyring_1.0-1_all.deb
+RUN dpkg -i cuda-keyring_1.0-1_all.deb
+
 
 RUN echo deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main >> /etc/apt/sources.list.d/llvm.list \
     && echo deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main >> /etc/apt/sources.list.d/llvm.list \
     && apt-key adv --fetch-keys http://apt.llvm.org/llvm-snapshot.gpg.key \
     && apt-get update && apt-get install -y llvm-11 clang-11
 
-RUN apt-get update && apt-get install -y \
-    python3 \
-    python3-dev \
-    python3-pip \
-    python3-venv \
-    libopenblas-dev \
-    libgl1-mesa-dev \
-    sudo \
-    curl \
-    git
+COPY install/install_python3.sh /install/install_python3.sh
+RUN bash /install/install_python3.sh
 
-# python -> python3
-RUN ln -s $(which python3) /usr/local/bin/python
-RUN ln -s $(which pip3) /usr/local/bin/pip
+COPY install/install_devtools.sh /install/install_devtools.sh
+RUN bash /install/install_devtools.sh
+
+COPY install/install_tvm_deps.sh /install/install_tvm_deps.sh
+RUN bash /install/install_tvm_deps.sh
+
+COPY install/install_opencv_deps.sh /install/install_opencv_deps.sh
+RUN bash /install/install_opencv_deps.sh
+
+COPY install/install_poetry.sh /install/install_poetry.sh
+RUN bash /install/install_poetry.sh
 
 # Install dependencies for arachne-runtime
 RUN python3 -m pip install --upgrade pip --no-cache-dir \
