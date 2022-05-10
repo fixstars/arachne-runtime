@@ -27,7 +27,7 @@ jobs:
         echo "$HOME/.poetry/bin" >> $GITHUB_PATH
         python --version
         poetry install --no-interaction
-        export TVM_LIBRARY_PATH=/workspaces/arachne-runtime/build/tvm
+        export TVM_LIBRARY_PATH=${GITHUB_WORKSPACE}/build/tvm
         git clone --recursive https://github.com/fixstars/tvm 3rdparty/tvm
         poetry run ./scripts/install_tvm.sh cpu
         poetry run pytest tests

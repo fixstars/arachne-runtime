@@ -29,7 +29,7 @@ else # TARGET = gpu
 fi
 
 cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -S "${TVM_SOURCE_DIR}" -B "${BUILD_DIR}"
-cmake --build "${BUILD_DIR}"
+cmake --build "${BUILD_DIR}" --target runtime
 
 cd "${TVM_SOURCE_DIR}/python" || exit
 python -m pip install -e .
