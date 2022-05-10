@@ -17,4 +17,4 @@ source ${script_dir}/${env_dirname}/.venv/bin/activate
 export LD_LIBRARY_PATH=${build_dir}:${LD_LIBRARY_PATH:=""}
 export PYTHONPATH=${tvm_dir}/python:${arachne_root}/python:${PYTHONPATH:=""}
 export PATH=/usr/local/cuda/bin:${PATH}
-python -m arachne.runtime.rpc.server --port ${rpc_port}
+python -m arachne_runtime.rpc.server --port ${rpc_port}
