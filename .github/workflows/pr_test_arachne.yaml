@@ -19,14 +19,15 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Run pytest
       run: |
+        python --version
         sudo bash docker/install/install_devtools.sh
         sudo bash docker/install/install_tvm_deps.sh
         sudo bash docker/install/install_opencv_deps.sh
         sudo bash docker/install/install_poetry.sh
         export PATH=/usr/local/poetry/bin:$PATH
-        export PYTHONPATH=/workspaces/arachne-runtime/python
+        python --version
+        poetry install
         export TVM_LIBRARY_PATH=/workspaces/arachne-runtime/build/tvm
         git clone --recursive https://github.com/fixstars/tvm 3rdparty/tvm
-        poetry install
         poetry run ./scripts/install_tvm.sh cpu
         poetry run pytest tests
