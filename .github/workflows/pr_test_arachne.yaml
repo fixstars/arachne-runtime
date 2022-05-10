@@ -1,0 +1,26 @@
+name: Run tests for approved PRs
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  run-tests:
+    runs-on: ubunut-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run pytest
+      run: |
+        bash docker/install/install_python3.sh
+        bash docker/install/install_devtools.sh
+        bash docker/install/install_tvm_deps.sh
+        bash docker/install/install_opencv_deps.sh
+        bash docker/install/install_poetry.sh
+        export PATH=/usr/local/poetry/bin:$PATH
+        export PYTHONPATH=/workspaces/arachne-runtime/python
+        export TVM_LIBRARY_PATH=/workspaces/arachne-runtime/build/tvm
+        git clone --recursive https://github.com/fixstars/tvm 3rdparty/tvm
+        poetry install
+        poetry run ./scripts/install_tvm.sh cpu
+        poetry run pytest tests
