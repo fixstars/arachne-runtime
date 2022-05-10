@@ -10,4 +10,4 @@ exclude =
     __pycache__,
     build,
     3rdparty,
-    python/arachne-runtime/rpc/protobuf/*
+    python/arachne_runtime/rpc/protobuf/*
