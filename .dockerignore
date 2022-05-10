@@ -1,0 +1,13 @@
+.git/
+.gitignore
+
+build
+dist
+*.egg-info
+*.egg/
+*.pyc
+*.swp
+.venv/
+**/__pycache__
+
+3rdparty/

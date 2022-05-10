@@ -1,0 +1,33 @@
+name: Run tests for approved PRs
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.6"]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Run pytest
+      run: |
+        python --version
+        sudo bash docker/install/install_devtools.sh
+        sudo bash docker/install/install_tvm_deps.sh
+        sudo bash docker/install/install_opencv_deps.sh
+        curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python - --version 1.2.0a2
+        echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+        python --version
+        poetry install --no-interaction
+        export TVM_LIBRARY_PATH=${GITHUB_WORKSPACE}/build/tvm
+        git clone --recursive https://github.com/fixstars/tvm 3rdparty/tvm
+        poetry run ./scripts/install_tvm.sh cpu
+        poetry run pytest tests

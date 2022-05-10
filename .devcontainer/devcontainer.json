@@ -1,0 +1,24 @@
+{
+    "name": "arachne-runtime",
+    "build": {
+        "dockerfile": "../docker/devel.Dockerfile",
+        "context": "../docker"
+    },
+    "remoteEnv": {
+        "PYTHONPATH": "/workspaces/arachne-runtime/python",
+        "TVM_LIBRARY_PATH": "/workspaces/arachne-runtime/build/tvm"
+    },
+    "workspaceFolder": "/workspaces/arachne-runtime",
+    "remoteUser": "developer",
+    "forwardPorts": [
+        8888
+    ],
+    "extensions": [
+        "ms-azuretools.vscode-docker",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "yzhang.markdown-all-in-one",
+        "bungcip.better-toml",
+        "njpwerner.autodocstring"
+    ],
+}
