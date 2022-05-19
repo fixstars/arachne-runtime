@@ -28,13 +28,12 @@ class RuntimeServicer(runtime_pb2_grpc.RuntimeServicer):
         """initialize the runtime module."""
         runtime = request.runtime
         args = json.loads(request.args_json)
-
         path = None
-        if "package_tar" in args:
+        if args.get("package_tar"):
             path = args["package_tar"]
-        elif "model_file" in args:
+        elif args.get("model_file"):
             path = args["model_file"]
-        elif "model_dir" in args:
+        elif args.get("model_dir"):
             path = args["model_dir"]
             tmpdir = tempfile.mkdtemp()
             with tarfile.open(path, "r") as f:

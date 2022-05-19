@@ -8,6 +8,7 @@ from typing import Dict
 import grpc
 import numpy as np
 
+from arachne_runtime.module.factory import RuntimeModuleBase, RuntimeModuleFactory
 from arachne_runtime.rpc.protobuf import (
     runtime_message_pb2,
     runtime_pb2_grpc,
@@ -21,11 +22,9 @@ from arachne_runtime.rpc.utils.nparray import (
 from .stubmgr import FileStubManager, ServerStatusStubManager
 
 
-class RuntimeClient:
-    """runtime client.
-
-    Method interface is almost the same as arachne.runtime.module.
-    """
+@RuntimeModuleFactory.register("rpc")
+class RpcRuntimeModule(RuntimeModuleBase):
+    """runtime client."""
 
     def __init__(self, channel: grpc.Channel, runtime: str, **kwargs):
         """
@@ -36,6 +35,7 @@ class RuntimeClient:
             stub : stub instance of gRPC generated stub class
         """
         self.finalized = False
+        self.channel = channel
         self.stats_stub_mgr = ServerStatusStubManager(channel)
         self.stats_stub_mgr.trylock()
         self.file_stub_mgr = FileStubManager(channel)
@@ -45,11 +45,11 @@ class RuntimeClient:
             package_tar = kwargs["package_tar"]
             upload_response = self.file_stub_mgr.upload(pathlib.Path(package_tar))
             kwargs["package_tar"] = upload_response.filepath
-        if kwargs.get("model_file"):
+        elif kwargs.get("model_file"):
             model_file = kwargs["model_file"]
             upload_response = self.file_stub_mgr.upload(pathlib.Path(model_file))
             kwargs["model_file"] = upload_response.filepath
-        if kwargs.get("model_dir"):
+        elif kwargs.get("model_dir"):
             model_dir = kwargs["model_dir"]
             with tempfile.NamedTemporaryFile() as f:
                 with tarfile.open(f.name, mode="w:gz") as tf:
@@ -61,16 +61,18 @@ class RuntimeClient:
         args = json.dumps(kwargs)
         req = runtime_message_pb2.InitRequest(runtime=runtime, args_json=args)
         self.stub.Init(req)
+        del self.file_stub_mgr
 
-    def finalize(self):
+    def _finalize(self):
         """Request to unlock server."""
         self.stats_stub_mgr.unlock()
+        self.channel.close()
         self.finalized = True
 
     def __del__(self):
         try:
             if not self.finalized:
-                self.finalize()
+                self._finalize()
         except grpc.RpcError:
             # when server is already shutdown, fail to unlock server.
             warnings.warn(UserWarning("Failed to unlock server"))
@@ -119,6 +121,12 @@ class RuntimeClient:
         np_array = generator_to_np_array(response_generator, byte_extract_func)
         assert isinstance(np_array, np.ndarray)
         return np_array
+
+    def get_output_details(self):
+        pass
+
+    def get_input_details(self):
+        pass
 
     def benchmark(self, warmup: int = 1, repeat: int = 10, number: int = 1) -> Dict:
         """Request to run benchmark.

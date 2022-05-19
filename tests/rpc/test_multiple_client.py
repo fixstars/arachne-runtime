@@ -6,12 +6,12 @@ import numpy as np
 import pytest
 from tvm.contrib.download import download
 
-from arachne_runtime.rpc import RuntimeClient, create_channel
+import arachne_runtime
 from arachne_runtime.rpc.server import create_server
 
 
 @pytest.mark.xfail
-def test_prohibit_multiple_client(rpc_port=5051):
+def test_prohibit_multiple_client(rpc_port=5055):
     with tempfile.TemporaryDirectory() as tmp_dir:
         os.chdir(tmp_dir)
         model_path = tmp_dir + "/model.tflite"
@@ -21,20 +21,21 @@ def test_prohibit_multiple_client(rpc_port=5051):
         server = create_server(rpc_port)
         server.start()
 
-        channel = create_channel(port=rpc_port)
         client1 = None
+        rpc_info = {"host": "localhost", "port": rpc_port}
         try:
-            client1 = RuntimeClient(channel, runtime="tflite", model_file=model_path)
+            client1 = arachne_runtime.init(
+                runtime="tflite", model_file=model_path, rpc_info=rpc_info
+            )
             # cannot create multiple clients
-            _ = RuntimeClient(channel, runtime="tflite", model_file=model_path)
+            _ = arachne_runtime.init(runtime="tflite", model_file=model_path, rpc_info=rpc_info)
+
         finally:
-            if client1 is not None:
-                client1.finalize()
-            channel.close()
+            del client1
             server.stop(0)
 
 
-def test_conitnue_first_client(rpc_port=5051):
+def test_continue_first_client(rpc_port=5056):
     with tempfile.TemporaryDirectory() as tmp_dir:
         os.chdir(tmp_dir)
         model_path = tmp_dir + "/model.tflite"
@@ -46,18 +47,17 @@ def test_conitnue_first_client(rpc_port=5051):
         server = create_server(rpc_port)
         server.start()
 
-        channel = create_channel(port=rpc_port)
-        client1 = RuntimeClient(channel, runtime="tflite", model_file=model_path)
+        rpc_info = {"host": "localhost", "port": rpc_port}
+        client1 = arachne_runtime.init(runtime="tflite", model_file=model_path, rpc_info=rpc_info)
 
         try:
             client1.set_input(0, dummy_input)
             # cannot create multiple clients
-            _ = RuntimeClient(channel, runtime="tflite", model_file=model_path)
+            _ = arachne_runtime.init(runtime="tflite", model_file=model_path, rpc_info=rpc_info)
         except grpc.RpcError:
             # client1 can continue to be used
             client1.run()
             _ = client1.get_output(0)
-            client1.finalize()
+            del client1
         finally:
-            channel.close()
             server.stop(0)
