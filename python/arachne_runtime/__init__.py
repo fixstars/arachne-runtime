@@ -98,29 +98,13 @@ def init(
     ), "package_tar, model_file, model_dir should not be None"
 
     if rpc_info is not None:
-        if package_tar is not None:
-            with tarfile.open(package_tar, "r:gz") as tar:
-                for m in tar.getmembers():
-                    if m.name != "env.yaml":
-                        model_file = m.name
-                tar.extractall(".")
-
-        channel = create_channel(rpc_info["host"], rpc_info["port"])
-
-        if model_file is not None and model_file.endswith(".tar"):
-            if package_tar is None:
-                assert env_file is not None
-                package_tar = "./package.tar"
-                with tarfile.open(package_tar, "w:gz") as tar:
-                    tar.add(model_file, arcname=model_file.split("/")[-1])
-                    tar.add(env_file, arcname="env.yaml")
-
         kwargs["package_tar"] = package_tar
         kwargs["model_file"] = model_file
         kwargs["model_dir"] = model_dir
+        kwargs["env_file"] = env_file
         return RuntimeModuleFactory.get(
             name="rpc",
-            channel=channel,
+            rpc_info=rpc_info,
             runtime=runtime,
             **{k: v for k, v in kwargs.items() if v is not None},
         )

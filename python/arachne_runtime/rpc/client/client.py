@@ -14,6 +14,7 @@ from arachne_runtime.rpc.protobuf import (
     runtime_pb2_grpc,
     stream_data_pb2,
 )
+from arachne_runtime.rpc.server import create_channel
 from arachne_runtime.rpc.utils.nparray import (
     generator_to_np_array,
     nparray_piece_generator,
@@ -26,7 +27,7 @@ from .stubmgr import FileStubManager, ServerStatusStubManager
 class RpcRuntimeModule(RuntimeModuleBase):
     """runtime client."""
 
-    def __init__(self, channel: grpc.Channel, runtime: str, **kwargs):
+    def __init__(self, runtime: str, rpc_info: Dict, **kwargs):
         """
 
         Args:
@@ -35,21 +36,21 @@ class RpcRuntimeModule(RuntimeModuleBase):
             stub : stub instance of gRPC generated stub class
         """
         self.finalized = False
-        self.channel = channel
-        self.stats_stub_mgr = ServerStatusStubManager(channel)
+        self.channel = create_channel(rpc_info["host"], rpc_info["port"])
+        self.stats_stub_mgr = ServerStatusStubManager(self.channel)
         self.stats_stub_mgr.trylock()
-        self.file_stub_mgr = FileStubManager(channel)
-        self.stub = runtime_pb2_grpc.RuntimeStub(channel)
+        self.file_stub_mgr = FileStubManager(self.channel)
+        self.stub = runtime_pb2_grpc.RuntimeStub(self.channel)
 
         if kwargs.get("package_tar"):
             package_tar = kwargs["package_tar"]
             upload_response = self.file_stub_mgr.upload(pathlib.Path(package_tar))
             kwargs["package_tar"] = upload_response.filepath
-        elif kwargs.get("model_file"):
+        if kwargs.get("model_file"):
             model_file = kwargs["model_file"]
             upload_response = self.file_stub_mgr.upload(pathlib.Path(model_file))
             kwargs["model_file"] = upload_response.filepath
-        elif kwargs.get("model_dir"):
+        if kwargs.get("model_dir"):
             model_dir = kwargs["model_dir"]
             with tempfile.NamedTemporaryFile() as f:
                 with tarfile.open(f.name, mode="w:gz") as tf:
