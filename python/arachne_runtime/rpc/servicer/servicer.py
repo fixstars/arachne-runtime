@@ -141,3 +141,11 @@ class RuntimeServicer(runtime_pb2_grpc.RuntimeServicer):
         np_array = self.module.get_output(index)
         for piece in nparray_piece_generator(np_array):
             yield runtime_message_pb2.GetOutputResponse(np_data=piece)
+
+    def GetInputDetails(self, request, context):
+        details = self.module.get_input_details()
+        return runtime_message_pb2.DetailsResponse(json=json.dumps(details))
+
+    def GetOutputDetails(self, request, context):
+        details = self.module.get_output_details()
+        return runtime_message_pb2.DetailsResponse(json=json.dumps(details))

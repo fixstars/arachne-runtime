@@ -40,11 +40,18 @@ class TFLiteRuntimeModule(RuntimeModuleBase):
         """
         return self.module.get_tensor(self.output_details[idx]["index"])
 
+    def _convert_detail(self, x):
+        return {
+            "name": x["name"],
+            "dtype": str(np.dtype(x["dtype"])),
+            "shape": list(map(int, x["shape"])),
+        }
+
     def get_input_details(self):
-        return self.input_details
+        return list(map(self._convert_detail, self.input_details))
 
     def get_output_details(self):
-        return self.output_details
+        return list(map(self._convert_detail, self.output_details))
 
     def benchmark(self, warmup: int = 1, repeat: int = 10, number: int = 1):
         for idx, inp in enumerate(self.input_details):

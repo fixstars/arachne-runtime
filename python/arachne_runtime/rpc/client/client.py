@@ -100,8 +100,7 @@ class RpcRuntimeModule(RuntimeModuleBase):
 
     def run(self):
         """Request to invoke inference."""
-        req = runtime_message_pb2.RunRequest()
-        self.stub.Run(req)
+        self.stub.Run(runtime_message_pb2.Empty())
 
     def get_output(self, index: int) -> np.ndarray:
         """Request to get inference output.
@@ -122,11 +121,13 @@ class RpcRuntimeModule(RuntimeModuleBase):
         assert isinstance(np_array, np.ndarray)
         return np_array
 
-    def get_output_details(self):
-        pass
-
     def get_input_details(self):
-        pass
+        resp = self.stub.GetInputDetails(runtime_message_pb2.Empty())
+        return json.loads(resp.json)
+
+    def get_output_details(self):
+        resp = self.stub.GetOutputDetails(runtime_message_pb2.Empty())
+        return json.loads(resp.json)
 
     def benchmark(self, warmup: int = 1, repeat: int = 10, number: int = 1) -> Dict:
         """Request to run benchmark.

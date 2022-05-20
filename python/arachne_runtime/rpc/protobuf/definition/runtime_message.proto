@@ -21,8 +21,6 @@ message SetInputRequest{
     }
 }
 
-message RunRequest{}
-
 message BenchmarkRequest{
     int32 warmup = 1;
     int32 repeat = 2;
@@ -42,4 +40,10 @@ message GetOutputRequest{
 
 message GetOutputResponse{
     bytes np_data = 1;
+}
+
+message Empty {};
+
+message DetailsResponse{
+    string json = 1;
 }

@@ -40,6 +40,8 @@ def test_tvm_runtime_rpc(rpc_port=5051):
             client.set_input(0, dummy_input)
             client.run()
             rpc_output = client.get_output(0)
+            _ = client.get_input_details()
+            _ = client.get_output_details()
             del client
         finally:
             server.stop(0)
@@ -88,6 +90,8 @@ def test_tvm_runtime_rpc2(rpc_port=5052):
             client.set_input(0, dummy_input)
             client.run()
             rpc_output = client.get_output(0)
+            _ = client.get_input_details()
+            _ = client.get_output_details()
             del client
         finally:
             server.stop(0)
@@ -123,6 +127,8 @@ def test_tflite_runtime_rpc(rpc_port=5053):
             client.set_input(0, dummy_input)
             client.run()
             rpc_output = client.get_output(0)
+            _ = client.get_input_details()
+            _ = client.get_output_details()
             del client
         finally:
             server.stop(0)
@@ -162,6 +168,8 @@ def test_onnx_runtime_rpc(rpc_port=5054):
             client.set_input(0, dummy_input)
             client.run()
             rpc_output = client.get_output(0)
+            _ = client.get_input_details()
+            _ = client.get_output_details()
             del client
         finally:
             server.stop(0)

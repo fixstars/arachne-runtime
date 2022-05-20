@@ -54,11 +54,14 @@ class ONNXRuntimeModule(RuntimeModuleBase):
         """
         return self._outputs[idx]
 
+    def _convert_detail(self, x):
+        return {"name": x.name, "dtype": onnx_tensor_type_to_np_dtype(x.type), "shape": x.shape}
+
     def get_input_details(self):
-        return self.input_details
+        return list(map(self._convert_detail, self.input_details))
 
     def get_output_details(self):
-        return self.output_details
+        return list(map(self._convert_detail, self.output_details))
 
     def benchmark(self, warmup: int = 1, repeat: int = 10, number: int = 1):
         for idx, inp in enumerate(self.input_details):
