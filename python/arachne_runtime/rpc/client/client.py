@@ -8,11 +8,13 @@ from typing import Dict
 import grpc
 import numpy as np
 
+from arachne_runtime.module.factory import RuntimeModuleBase, RuntimeModuleFactory
 from arachne_runtime.rpc.protobuf import (
     runtime_message_pb2,
     runtime_pb2_grpc,
     stream_data_pb2,
 )
+from arachne_runtime.rpc.server import create_channel
 from arachne_runtime.rpc.utils.nparray import (
     generator_to_np_array,
     nparray_piece_generator,
@@ -21,13 +23,11 @@ from arachne_runtime.rpc.utils.nparray import (
 from .stubmgr import FileStubManager, ServerStatusStubManager
 
 
-class RuntimeClient:
-    """runtime client.
+@RuntimeModuleFactory.register("rpc")
+class RpcRuntimeModule(RuntimeModuleBase):
+    """runtime client."""
 
-    Method interface is almost the same as arachne.runtime.module.
-    """
-
-    def __init__(self, channel: grpc.Channel, runtime: str, **kwargs):
+    def __init__(self, runtime: str, rpc_info: Dict, **kwargs):
         """
 
         Args:
@@ -36,10 +36,11 @@ class RuntimeClient:
             stub : stub instance of gRPC generated stub class
         """
         self.finalized = False
-        self.stats_stub_mgr = ServerStatusStubManager(channel)
+        self.channel = create_channel(rpc_info["host"], rpc_info["port"])
+        self.stats_stub_mgr = ServerStatusStubManager(self.channel)
         self.stats_stub_mgr.trylock()
-        self.file_stub_mgr = FileStubManager(channel)
-        self.stub = runtime_pb2_grpc.RuntimeStub(channel)
+        self.file_stub_mgr = FileStubManager(self.channel)
+        self.stub = runtime_pb2_grpc.RuntimeStub(self.channel)
 
         if kwargs.get("package_tar"):
             package_tar = kwargs["package_tar"]
@@ -61,16 +62,18 @@ class RuntimeClient:
         args = json.dumps(kwargs)
         req = runtime_message_pb2.InitRequest(runtime=runtime, args_json=args)
         self.stub.Init(req)
+        del self.file_stub_mgr
 
-    def finalize(self):
+    def _finalize(self):
         """Request to unlock server."""
         self.stats_stub_mgr.unlock()
+        self.channel.close()
         self.finalized = True
 
     def __del__(self):
         try:
             if not self.finalized:
-                self.finalize()
+                self._finalize()
         except grpc.RpcError:
             # when server is already shutdown, fail to unlock server.
             warnings.warn(UserWarning("Failed to unlock server"))
@@ -98,8 +101,7 @@ class RuntimeClient:
 
     def run(self):
         """Request to invoke inference."""
-        req = runtime_message_pb2.RunRequest()
-        self.stub.Run(req)
+        self.stub.Run(runtime_message_pb2.Empty())
 
     def get_output(self, index: int) -> np.ndarray:
         """Request to get inference output.
@@ -119,6 +121,14 @@ class RuntimeClient:
         np_array = generator_to_np_array(response_generator, byte_extract_func)
         assert isinstance(np_array, np.ndarray)
         return np_array
+
+    def get_input_details(self):
+        resp = self.stub.GetInputDetails(runtime_message_pb2.Empty())
+        return json.loads(resp.json)
+
+    def get_output_details(self):
+        resp = self.stub.GetOutputDetails(runtime_message_pb2.Empty())
+        return json.loads(resp.json)
 
     def benchmark(self, warmup: int = 1, repeat: int = 10, number: int = 1) -> Dict:
         """Request to run benchmark.

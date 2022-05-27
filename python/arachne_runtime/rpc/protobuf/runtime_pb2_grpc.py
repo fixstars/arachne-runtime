@@ -27,7 +27,7 @@ class RuntimeStub(object):
                 )
         self.Run = channel.unary_unary(
                 '/Runtime/Run',
-                request_serializer=runtime__message__pb2.RunRequest.SerializeToString,
+                request_serializer=runtime__message__pb2.Empty.SerializeToString,
                 response_deserializer=msg__response__pb2.MsgResponse.FromString,
                 )
         self.Benchmark = channel.unary_unary(
@@ -39,6 +39,16 @@ class RuntimeStub(object):
                 '/Runtime/GetOutput',
                 request_serializer=runtime__message__pb2.GetOutputRequest.SerializeToString,
                 response_deserializer=runtime__message__pb2.GetOutputResponse.FromString,
+                )
+        self.GetInputDetails = channel.unary_unary(
+                '/Runtime/GetInputDetails',
+                request_serializer=runtime__message__pb2.Empty.SerializeToString,
+                response_deserializer=runtime__message__pb2.DetailsResponse.FromString,
+                )
+        self.GetOutputDetails = channel.unary_unary(
+                '/Runtime/GetOutputDetails',
+                request_serializer=runtime__message__pb2.Empty.SerializeToString,
+                response_deserializer=runtime__message__pb2.DetailsResponse.FromString,
                 )
 
 
@@ -75,6 +85,18 @@ class RuntimeServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetInputDetails(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetOutputDetails(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_RuntimeServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -90,7 +112,7 @@ def add_RuntimeServicer_to_server(servicer, server):
             ),
             'Run': grpc.unary_unary_rpc_method_handler(
                     servicer.Run,
-                    request_deserializer=runtime__message__pb2.RunRequest.FromString,
+                    request_deserializer=runtime__message__pb2.Empty.FromString,
                     response_serializer=msg__response__pb2.MsgResponse.SerializeToString,
             ),
             'Benchmark': grpc.unary_unary_rpc_method_handler(
@@ -102,6 +124,16 @@ def add_RuntimeServicer_to_server(servicer, server):
                     servicer.GetOutput,
                     request_deserializer=runtime__message__pb2.GetOutputRequest.FromString,
                     response_serializer=runtime__message__pb2.GetOutputResponse.SerializeToString,
+            ),
+            'GetInputDetails': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetInputDetails,
+                    request_deserializer=runtime__message__pb2.Empty.FromString,
+                    response_serializer=runtime__message__pb2.DetailsResponse.SerializeToString,
+            ),
+            'GetOutputDetails': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetOutputDetails,
+                    request_deserializer=runtime__message__pb2.Empty.FromString,
+                    response_serializer=runtime__message__pb2.DetailsResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -159,7 +191,7 @@ class Runtime(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/Runtime/Run',
-            runtime__message__pb2.RunRequest.SerializeToString,
+            runtime__message__pb2.Empty.SerializeToString,
             msg__response__pb2.MsgResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
@@ -195,5 +227,39 @@ class Runtime(object):
         return grpc.experimental.unary_stream(request, target, '/Runtime/GetOutput',
             runtime__message__pb2.GetOutputRequest.SerializeToString,
             runtime__message__pb2.GetOutputResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def GetInputDetails(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Runtime/GetInputDetails',
+            runtime__message__pb2.Empty.SerializeToString,
+            runtime__message__pb2.DetailsResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def GetOutputDetails(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Runtime/GetOutputDetails',
+            runtime__message__pb2.Empty.SerializeToString,
+            runtime__message__pb2.DetailsResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

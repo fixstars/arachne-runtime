@@ -28,13 +28,12 @@ class RuntimeServicer(runtime_pb2_grpc.RuntimeServicer):
         """initialize the runtime module."""
         runtime = request.runtime
         args = json.loads(request.args_json)
-
         path = None
-        if "package_tar" in args:
+        if args.get("package_tar"):
             path = args["package_tar"]
-        elif "model_file" in args:
+        elif args.get("model_file"):
             path = args["model_file"]
-        elif "model_dir" in args:
+        elif args.get("model_dir"):
             path = args["model_dir"]
             tmpdir = tempfile.mkdtemp()
             with tarfile.open(path, "r") as f:
@@ -142,3 +141,11 @@ class RuntimeServicer(runtime_pb2_grpc.RuntimeServicer):
         np_array = self.module.get_output(index)
         for piece in nparray_piece_generator(np_array):
             yield runtime_message_pb2.GetOutputResponse(np_data=piece)
+
+    def GetInputDetails(self, request, context):
+        details = self.module.get_input_details()
+        return runtime_message_pb2.DetailsResponse(json=json.dumps(details))
+
+    def GetOutputDetails(self, request, context):
+        details = self.module.get_output_details()
+        return runtime_message_pb2.DetailsResponse(json=json.dumps(details))

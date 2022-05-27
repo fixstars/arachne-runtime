@@ -1,5 +1,6 @@
 import os
 import tempfile
+from logging import getLogger
 
 import numpy as np
 from tvm.contrib.download import download
@@ -7,6 +8,8 @@ from tvm.contrib.download import download
 import arachne_runtime
 import arachne_runtime.rpc
 from arachne_runtime.rpc.server import create_server
+
+logger = getLogger(__name__)
 
 
 def test_tvm_runtime_rpc(rpc_port=5051):
@@ -29,20 +32,24 @@ def test_tvm_runtime_rpc(rpc_port=5051):
         server = create_server(rpc_port)
         server.start()
         try:
-            client = arachne_runtime.rpc.init(
-                runtime="tvm", package_tar=tvm_package_path, rpc_port=rpc_port
+            client = arachne_runtime.init(
+                runtime="tvm",
+                package_tar=tvm_package_path,
+                rpc_info={"host": "localhost", "port": rpc_port},
             )
             client.set_input(0, dummy_input)
             client.run()
             rpc_output = client.get_output(0)
-            client.finalize()
+            _ = client.get_input_details()
+            _ = client.get_output_details()
+            del client
         finally:
             server.stop(0)
         # compare
         np.testing.assert_equal(local_output, rpc_output)
 
 
-def test_tvm_runtime_rpc2(rpc_port=5051):
+def test_tvm_runtime_rpc2(rpc_port=5052):
     with tempfile.TemporaryDirectory() as tmp_dir:
         os.chdir(tmp_dir)
         url = "https://arachne-public-pkgs.s3.ap-northeast-1.amazonaws.com/models/test/tvm_mobilenet.tar"
@@ -74,20 +81,25 @@ def test_tvm_runtime_rpc2(rpc_port=5051):
         server = create_server(rpc_port)
         server.start()
         try:
-            client = arachne_runtime.rpc.init(
-                runtime="tvm", model_file=model_file, env_file=env_file, rpc_port=rpc_port
+            client = arachne_runtime.init(
+                runtime="tvm",
+                model_file=model_file,
+                env_file=env_file,
+                rpc_info={"host": "localhost", "port": rpc_port},
             )
             client.set_input(0, dummy_input)
             client.run()
             rpc_output = client.get_output(0)
-            client.finalize()
+            _ = client.get_input_details()
+            _ = client.get_output_details()
+            del client
         finally:
             server.stop(0)
         # compare
         np.testing.assert_equal(local_output, rpc_output)
 
 
-def test_tflite_runtime_rpc(rpc_port=5051):
+def test_tflite_runtime_rpc(rpc_port=5053):
     with tempfile.TemporaryDirectory() as tmp_dir:
         os.chdir(tmp_dir)
         model_path = tmp_dir + "/model.tflite"
@@ -107,13 +119,17 @@ def test_tflite_runtime_rpc(rpc_port=5051):
         server = create_server(rpc_port)
         server.start()
         try:
-            client = arachne_runtime.rpc.init(
-                runtime="tflite", model_file=model_path, rpc_port=rpc_port
+            client = arachne_runtime.init(
+                runtime="tflite",
+                model_file=model_path,
+                rpc_info={"host": "localhost", "port": rpc_port},
             )
             client.set_input(0, dummy_input)
             client.run()
             rpc_output = client.get_output(0)
-            client.finalize()
+            _ = client.get_input_details()
+            _ = client.get_output_details()
+            del client
         finally:
             server.stop(0)
 
@@ -121,7 +137,7 @@ def test_tflite_runtime_rpc(rpc_port=5051):
         np.testing.assert_equal(local_output, rpc_output)
 
 
-def test_onnx_runtime_rpc(rpc_port=5051):
+def test_onnx_runtime_rpc(rpc_port=5054):
     with tempfile.TemporaryDirectory() as tmp_dir:
         os.chdir(tmp_dir)
         url = (
@@ -143,13 +159,18 @@ def test_onnx_runtime_rpc(rpc_port=5051):
         server = create_server(rpc_port)
         server.start()
         try:
-            client = arachne_runtime.rpc.init(
-                runtime="onnx", model_file=model_path, rpc_port=rpc_port, **ort_opts
+            client = arachne_runtime.init(
+                runtime="onnx",
+                model_file=model_path,
+                rpc_info={"host": "localhost", "port": rpc_port},
+                **ort_opts,
             )
             client.set_input(0, dummy_input)
             client.run()
             rpc_output = client.get_output(0)
-            client.finalize()
+            _ = client.get_input_details()
+            _ = client.get_output_details()
+            del client
         finally:
             server.stop(0)
         # compare

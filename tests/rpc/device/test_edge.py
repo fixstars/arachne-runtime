@@ -42,19 +42,22 @@ def test_tvm_runtime_rpc(pytestconfig):
 
         # edge compile and run
         edge_package_path = tmp_dir + f"/tvm_mobilenet_{tvm_target_device}.tar"
-        url2 = "https://arachne-public-pkgs.s3.ap-northeast-1.amazonaws.com/models/test/" + f"tvm_mobilenet_{tvm_target_device}.tar"
+        url2 = (
+            "https://arachne-public-pkgs.s3.ap-northeast-1.amazonaws.com/models/test/"
+            + f"tvm_mobilenet_{tvm_target_device}.tar"
+        )
         download(url2, edge_package_path)
-        client = arachne_runtime.rpc.init(
+        rpc_info = {"host": rpc_host, "port": rpc_port}
+        client = arachne_runtime.init(
             runtime="tvm",
             package_tar=edge_package_path,
-            rpc_host=rpc_host,
-            rpc_port=rpc_port,
+            rpc_info=rpc_info,
         )
         client.set_input(0, input_data)
         client.run()
         edge_output = client.get_output(0)
         edge_result = np.argmax(edge_output)
-        client.finalize()
+        del client
         # compare
         assert host_result == edge_result
 
@@ -81,17 +84,17 @@ def test_tflite_runtime_rpc(pytestconfig):
         print(host_output.shape, host_result)
 
         # edge
-        client = arachne_runtime.rpc.init(
+        rpc_info = {"host": rpc_host, "port": rpc_port}
+        client = arachne_runtime.init(
             runtime="tflite",
             model_file=model_path,
-            rpc_host=rpc_host,
-            rpc_port=rpc_port,
+            rpc_info=rpc_info,
         )
         client.set_input(0, input_data)
         client.run()
         rpc_output = client.get_output(0)
         rpc_result = np.argmax(rpc_output)
-        client.finalize()
+        del client
 
         # compare
         assert host_result == rpc_result
@@ -119,19 +122,20 @@ def test_onnx_runtime_rpc(pytestconfig):
         rtmodule.run()
         local_output = rtmodule.get_output(0)
         local_result = np.argmax(local_output)
+
         # edge
-        client = arachne_runtime.rpc.init(
+        rpc_info = {"host": rpc_host, "port": rpc_port}
+        client = arachne_runtime.init(
             runtime="onnx",
             model_file=model_path,
-            rpc_host=rpc_host,
-            rpc_port=rpc_port,
+            rpc_info=rpc_info,
             **ort_opts,
         )
         client.set_input(0, input_data)
         client.run()
         rpc_output = client.get_output(0)
         rpc_result = np.argmax(rpc_output)
-        client.finalize()
+        del client
         # compare
         print(local_output.shape, rpc_output.shape)
         print(local_result, rpc_result)

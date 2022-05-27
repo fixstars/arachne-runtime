@@ -1,13 +1,14 @@
 import importlib
 import tarfile
 from logging import getLogger
-from typing import Optional
+from typing import Dict, Optional
 
 import yaml
 from packaging.version import Version
 
-from .module import RuntimeModuleBase, RuntimeModuleFactory
-from .utils.version_utils import (
+import arachne_runtime.rpc
+from arachne_runtime.module import RuntimeModuleBase, RuntimeModuleFactory
+from arachne_runtime.utils.version_utils import (
     get_cuda_version,
     get_cudnn_version,
     get_tensorrt_version,
@@ -72,6 +73,7 @@ def init(
     model_file: Optional[str] = None,
     model_dir: Optional[str] = None,
     env_file: Optional[str] = None,
+    rpc_info: Optional[Dict] = None,
     **kwargs,
 ) -> RuntimeModuleBase:
     """Initialize RuntimeModule.
@@ -93,6 +95,18 @@ def init(
     assert (
         package_tar is not None or model_file is not None or model_dir is not None
     ), "package_tar, model_file, model_dir should not be None"
+
+    if rpc_info is not None:
+        kwargs["package_tar"] = package_tar
+        kwargs["model_file"] = model_file
+        kwargs["model_dir"] = model_dir
+        kwargs["env_file"] = env_file
+        return RuntimeModuleFactory.get(
+            name="rpc",
+            rpc_info=rpc_info,
+            runtime=runtime,
+            **{k: v for k, v in kwargs.items() if v is not None},
+        )
 
     if model_dir is not None:
         return RuntimeModuleFactory.get(name=runtime, model=model_dir, **kwargs)
