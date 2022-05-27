@@ -6,9 +6,8 @@ from typing import Dict, Optional
 import yaml
 from packaging.version import Version
 
+import arachne_runtime.rpc
 from arachne_runtime.module import RuntimeModuleBase, RuntimeModuleFactory
-from arachne_runtime.rpc.client.client import RpcRuntimeModule
-from arachne_runtime.rpc.server import create_channel
 from arachne_runtime.utils.version_utils import (
     get_cuda_version,
     get_cudnn_version,
