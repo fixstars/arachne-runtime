@@ -56,14 +56,13 @@ class RuntimeServicer(runtime_pb2_grpc.RuntimeServicer):
         self.module = arachne_runtime.init(runtime=runtime, **args)
         return MsgResponse(msg=f"Init {runtime} runtime")
 
-    def Reset(self, request, context):
+    def Done(self, request, context):
         """Delete runtime module"""
         if self.module:
-            if hasattr(self.module, "__del__"):
-                self.module.__del__()  # type: ignore
+            self.module.done()
             self.module = None
-            logger.info("reset runtime module")
-            return MsgResponse(msg="Reset runtime module")
+            logger.info("Release the reference of the old runtime module")
+            return MsgResponse(msg="Release the reference of the old runtime module")
 
         return MsgResponse(msg="Runtime module is already reset")
 

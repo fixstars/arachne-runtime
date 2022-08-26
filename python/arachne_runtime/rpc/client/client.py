@@ -64,10 +64,10 @@ class RpcRuntimeModule(RuntimeModuleBase):
         self.stub.Init(req)
         del self.file_stub_mgr
 
-    def _finalize(self):
+    def done(self):
         """Request to reset runtime module and unlock server."""
         if hasattr(self, "stub"):
-            self.stub.Reset(runtime_message_pb2.Empty())
+            self.stub.Done(runtime_message_pb2.Empty())
         self.stats_stub_mgr.unlock()
         self.channel.close()
         self.finalized = True
@@ -75,7 +75,7 @@ class RpcRuntimeModule(RuntimeModuleBase):
     def __del__(self):
         try:
             if not self.finalized:
-                self._finalize()
+                self.done()
         except grpc.RpcError:
             # when server is already shutdown, fail to unlock server.
             warnings.warn(UserWarning("Failed to unlock server"))

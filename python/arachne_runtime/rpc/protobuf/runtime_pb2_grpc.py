@@ -20,8 +20,8 @@ class RuntimeStub(object):
                 request_serializer=runtime__message__pb2.InitRequest.SerializeToString,
                 response_deserializer=msg__response__pb2.MsgResponse.FromString,
                 )
-        self.Reset = channel.unary_unary(
-                '/Runtime/Reset',
+        self.Done = channel.unary_unary(
+                '/Runtime/Done',
                 request_serializer=runtime__message__pb2.Empty.SerializeToString,
                 response_deserializer=msg__response__pb2.MsgResponse.FromString,
                 )
@@ -66,7 +66,7 @@ class RuntimeServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def Reset(self, request, context):
+    def Done(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -116,8 +116,8 @@ def add_RuntimeServicer_to_server(servicer, server):
                     request_deserializer=runtime__message__pb2.InitRequest.FromString,
                     response_serializer=msg__response__pb2.MsgResponse.SerializeToString,
             ),
-            'Reset': grpc.unary_unary_rpc_method_handler(
-                    servicer.Reset,
+            'Done': grpc.unary_unary_rpc_method_handler(
+                    servicer.Done,
                     request_deserializer=runtime__message__pb2.Empty.FromString,
                     response_serializer=msg__response__pb2.MsgResponse.SerializeToString,
             ),
@@ -179,7 +179,7 @@ class Runtime(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def Reset(request,
+    def Done(request,
             target,
             options=(),
             channel_credentials=None,
@@ -189,7 +189,7 @@ class Runtime(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/Runtime/Reset',
+        return grpc.experimental.unary_unary(request, target, '/Runtime/Done',
             runtime__message__pb2.Empty.SerializeToString,
             msg__response__pb2.MsgResponse.FromString,
             options, channel_credentials,
