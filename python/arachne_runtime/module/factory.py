@@ -17,6 +17,15 @@ class RuntimeModuleBase(metaclass=ABCMeta):
     def __init__(self, model: str, **kwargs):
         pass
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.done()
+
+    def done(self):
+        pass
+
     @abstractmethod
     def run(self):
         """run inference"""

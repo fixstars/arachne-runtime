@@ -2,6 +2,7 @@ import json
 import os
 import tarfile
 import tempfile
+from typing import Optional
 
 import grpc
 
@@ -22,7 +23,7 @@ class RuntimeServicer(runtime_pb2_grpc.RuntimeServicer):
     """runtime servicer"""
 
     def __init__(self):
-        self.module: RuntimeModuleBase  #: runtime module for inference
+        self.module: Optional[RuntimeModuleBase]  #: runtime module for inference
 
     def Init(self, request, context):
         """initialize the runtime module."""
@@ -54,6 +55,16 @@ class RuntimeServicer(runtime_pb2_grpc.RuntimeServicer):
 
         self.module = arachne_runtime.init(runtime=runtime, **args)
         return MsgResponse(msg=f"Init {runtime} runtime")
+
+    def Done(self, request, context):
+        """Delete runtime module"""
+        if self.module:
+            self.module.done()
+            self.module = None
+            logger.info("Release the reference of the old runtime module")
+            return MsgResponse(msg="Release the reference of the old runtime module")
+
+        return MsgResponse(msg="Runtime module is already reset")
 
     def SetInput(self, request_iterator, context):
         """Set input parameter to runtime module.
@@ -143,9 +154,11 @@ class RuntimeServicer(runtime_pb2_grpc.RuntimeServicer):
             yield runtime_message_pb2.GetOutputResponse(np_data=piece)
 
     def GetInputDetails(self, request, context):
+        assert self.module
         details = self.module.get_input_details()
         return runtime_message_pb2.DetailsResponse(json=json.dumps(details))
 
     def GetOutputDetails(self, request, context):
+        assert self.module
         details = self.module.get_output_details()
         return runtime_message_pb2.DetailsResponse(json=json.dumps(details))

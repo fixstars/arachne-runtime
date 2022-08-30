@@ -20,6 +20,11 @@ class RuntimeStub(object):
                 request_serializer=runtime__message__pb2.InitRequest.SerializeToString,
                 response_deserializer=msg__response__pb2.MsgResponse.FromString,
                 )
+        self.Done = channel.unary_unary(
+                '/Runtime/Done',
+                request_serializer=runtime__message__pb2.Empty.SerializeToString,
+                response_deserializer=msg__response__pb2.MsgResponse.FromString,
+                )
         self.SetInput = channel.stream_unary(
                 '/Runtime/SetInput',
                 request_serializer=runtime__message__pb2.SetInputRequest.SerializeToString,
@@ -56,6 +61,12 @@ class RuntimeServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def Init(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def Done(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -103,6 +114,11 @@ def add_RuntimeServicer_to_server(servicer, server):
             'Init': grpc.unary_unary_rpc_method_handler(
                     servicer.Init,
                     request_deserializer=runtime__message__pb2.InitRequest.FromString,
+                    response_serializer=msg__response__pb2.MsgResponse.SerializeToString,
+            ),
+            'Done': grpc.unary_unary_rpc_method_handler(
+                    servicer.Done,
+                    request_deserializer=runtime__message__pb2.Empty.FromString,
                     response_serializer=msg__response__pb2.MsgResponse.SerializeToString,
             ),
             'SetInput': grpc.stream_unary_rpc_method_handler(
@@ -158,6 +174,23 @@ class Runtime(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/Runtime/Init',
             runtime__message__pb2.InitRequest.SerializeToString,
+            msg__response__pb2.MsgResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def Done(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Runtime/Done',
+            runtime__message__pb2.Empty.SerializeToString,
             msg__response__pb2.MsgResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
