@@ -118,7 +118,14 @@ tflite_interpreter_opts = {"num_threads": 4}
 runtime_module = arachne_runtime.init(
     runtime="tflite", model_file="/path/to/model.tflite", rpc_info={"host": "hostname", "port": 5051}, **tflite_interpreter_opts
 )
+
+# To close rpc connection, call done()
+runtime_module.done()
 ```
+
+### Runtime Plugin
+
+Please refer the `plugin_examples` for more details.
 
 ## License
 
