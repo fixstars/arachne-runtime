@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "arachne-runtime"
-version = "0.1.1"
+version = "0.2.0"
 description = "A thin library for executing different types of DNN models from a common API"
 authors = ["Takafumi Kubota <takafumi.kubota@fixstars.com>"]
 license = "MIT"
